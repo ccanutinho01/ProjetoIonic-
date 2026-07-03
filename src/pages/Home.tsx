@@ -1,6 +1,6 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import './Home.css';
-import App from './App';
+import ConsultaCep from './ConsultaCep';
 
 const Home: React.FC = () => {
   return (
@@ -16,7 +16,7 @@ const Home: React.FC = () => {
             <IonTitle size="large">Consulta CEP</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <App />
+        <ConsultaCep />
       </IonContent>
     </IonPage>
   );
