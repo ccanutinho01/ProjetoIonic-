@@ -22,23 +22,39 @@ const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleConsultarCEP = async () => {
-    setLoading(true);
-    {loading && <p>Carregando...</p>}
-    setLoading(false);
-    {error && <p>Erro: {error}</p>}
+    if (!cepInput) {
+      setError('Digite um CEP válido');
+      return;
+    }
 
+    setLoading(true);
     setError(null);
     setCidade('');
     setEstado('');
 
-  try {
-  const resposta = 
-  await fetch(`https://viacep.com.br/ws/${cepInput}/json/`);}
+    try {
+      const sanitized = cepInput.replace(/\D/g, '');
+      const resposta = await fetch(`https://viacep.com.br/ws/${sanitized}/json/`);
 
-  catch(erro) {
-    console.error('Erro', erro);
-  }
-}
+      if (!resposta.ok) {
+        throw new Error(`Erro na requisição: ${resposta.status}`);
+      }
+
+      const data = await resposta.json();
+
+      if (data.erro) {
+        setError('CEP não encontrado');
+      } else {
+        setCidade(data.localidade || '');
+        setEstado(data.uf || '');
+      }
+    } catch (erro) {
+      console.error('Erro', erro);
+      setError(String(erro));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <IonPage>
