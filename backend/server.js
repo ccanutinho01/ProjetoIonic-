@@ -1,6 +1,7 @@
 import express from "express";
 
 const app = express();
+const produtosRouter = express.Router();
 
 app.use(express.json());
 
@@ -55,16 +56,12 @@ const cadastrarProduto = (req, res) => {
   res.status(201).json(novoProduto);
 };
 
-app.get(["/produtos", "/api/produtos"], responderProdutos);
-app.post(["/produtos", "/api/produtos"], cadastrarProduto);
+produtosRouter.get("/produtos", responderProdutos);
+produtosRouter.post("/produtos", cadastrarProduto);
 
-app.get("/produtos", (req, res) => {
-  res.json(produtos);
-});
-
-app.post("/produtos", (req, res) => {
-  cadastrarProduto(req, res);
-});
+app.use("/api", produtosRouter);
+app.get("/produtos", responderProdutos);
+app.post("/produtos", cadastrarProduto);
 
 app.get("/usuarios", (req, res) => {
   res.json([
@@ -79,6 +76,45 @@ app.get("/usuarios", (req, res) => {
       email: "maria@email.com",
     },
   ]);
+});
+
+const express = require('express');
+const cors = require('cors');
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+let cursos = [
+  {id: 1, titulo: "Matemática Básica", cargaHoraria: 40, preco: 200},
+  {id: 2, titulo: "Programação em JavaScript", cargaHoraria: 60, preco: 300},
+  {id: 3, titulo: "Banco de Dados", cargaHoraria: 50, preco: 250},
+];
+
+app.get('/cursos', (req, res) => {
+  res.json(cursos);
+});
+
+
+app.post('/cursos', (req, res) => {
+  const { titulo, cargaHoraria, preco } = req.body;
+  const novoCurso = {
+    id: cursos.length + 1,
+    titulo,
+    cargaHoraria,
+    preco,
+  };
+  cursos.push(novoCurso);
+  res.status(201).json(novoCurso);
+});
+
+app.get('/cursos/:id', (req, res) => {
+  const cursoId = parseInt(req.params.id);
+  const curso = cursos.find(c => c.id === cursoId);
+    if (curso) {
+    res.json(curso);
+  } else {
+    res.status(404).json({ erro: "Curso não encontrado" });
+  }
 });
 
 app.listen(3000, "0.0.0.0", () => {

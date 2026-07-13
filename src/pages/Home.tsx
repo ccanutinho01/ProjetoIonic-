@@ -29,9 +29,12 @@ const Home: React.FC = () => {
   const [quantidadeProduto, setQuantidadeProduto] = useState('');
   const [valorProduto, setValorProduto] = useState('');
   const [cadastrando, setCadastrando] = useState(false);
+  const [curso, setCurso] = useState<{ titulo: string; cargaHoraria: number; preco: number } | null>(null);
+  console.log('curso', curso);
+
 
   const requestProdutos = async (method: 'GET' | 'POST' = 'GET', body?: unknown) => {
-    const response = await fetch('/api/produtos', {
+    const response = await fetch('http://127.0.0.1:3000/produtos', {
       method,
       headers: body ? { 'Content-Type': 'application/json' } : undefined,
       body: body ? JSON.stringify(body) : undefined,
@@ -119,6 +122,68 @@ const Home: React.FC = () => {
       setCadastrando(false);
     }
   };
+
+  const [cursos, setCursos] = useState<Array<{ titulo: string; cargaHoraria: number; preco: number }>>([]);
+const [loadingCursos, setLoadingCursos] = useState(false);
+const [errorCursos, setErrorCursos] = useState<string | null>(null);
+
+const [tituloCurso, setTituloCurso] = useState('');
+const [cargaHorariaCurso, setCargaHorariaCurso] = useState('');
+const [precoCurso, setPrecoCurso] = useState('');
+const [cadastrandoCurso, setCadastrandoCurso] = useState(false);
+
+const requestCursos = async (method: 'GET' | 'POST' = 'GET', body?: unknown) => {
+  const response = await fetch('http://127.0.0.1:3001/cursos', {
+    method,
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  if (!response.ok) {
+    const texto = await response.text();
+    throw new Error(texto || `Erro na requisição: ${response.status}`);
+  }
+
+  return response;
+};
+
+const handleBuscarCursos = async () => {
+  setLoadingCursos(true);
+  setErrorCursos(null);
+
+  try {
+    const resposta = await requestCursos('GET');
+    const data = await resposta.json();
+    setCursos(data);
+  } catch (erro) {
+    setErrorCursos(String(erro));
+  } finally {
+    setLoadingCursos(false);
+  }
+};
+
+const handleCadastrarCurso = async (event: React.FormEvent) => {
+  event.preventDefault();
+  setCadastrandoCurso(true);
+  setErrorCursos(null);
+
+  try {
+    await requestCursos('POST', {
+      titulo: tituloCurso,
+      cargaHoraria: Number(cargaHorariaCurso),
+      preco: Number(precoCurso),
+    });
+
+    setTituloCurso('');
+    setCargaHorariaCurso('');
+    setPrecoCurso('');
+    await handleBuscarCursos();
+  } catch (erro) {
+    setErrorCursos(String(erro));
+  } finally {
+    setCadastrandoCurso(false);
+  }
+};
 
   return (
     <IonPage>
@@ -233,7 +298,72 @@ const Home: React.FC = () => {
             </IonList>
           )}
         </div>
+        <div style={{ padding: '16px' }}>
+          <h2>Cursos da API</h2>
 
+          <form onSubmit={handleCadastrarCurso}>
+            <IonItem>
+              <IonLabel position="stacked">Título</IonLabel>
+              <IonInput
+                value={tituloCurso}
+                onIonInput={(e) => setTituloCurso(e.detail.value ?? '')}
+                required
+              />
+            </IonItem>
+
+            <IonItem>
+              <IonLabel position="stacked">Carga Horária</IonLabel>
+              <IonInput
+                type="number"
+                value={cargaHorariaCurso}
+                onIonInput={(e) => setCargaHorariaCurso(e.detail.value ?? '')}
+                required
+              />
+            </IonItem>
+
+            <IonItem>
+              <IonLabel position="stacked">Preço</IonLabel>
+              <IonInput
+                type="number"
+                value={precoCurso}
+                onIonInput={(e) => setPrecoCurso(e.detail.value ?? '')}
+                required
+              />
+            </IonItem>
+
+            <div style={{ marginTop: '12px' }}>
+              <IonButton type="submit" expand="block" disabled={cadastrandoCurso}>
+                {cadastrandoCurso ? <IonSpinner name="dots" /> : 'Cadastrar curso'}
+              </IonButton>
+            </div>
+          </form>
+
+          <div style={{ marginTop: '16px' }}>
+            <IonButton expand="block" onClick={handleBuscarCursos} disabled={loadingCursos}>
+              {loadingCursos ? <IonSpinner name="dots" /> : 'Buscar cursos'}
+            </IonButton>
+          </div>
+
+          {errorCursos && (
+            <IonText color="danger">
+              <p>Erro: {errorCursos}</p>
+            </IonText>
+          )}
+
+          {cursos.length > 0 && (
+            <IonList>
+              {cursos.map((curso, index) => (
+                <IonItem key={`${curso.titulo}-${index}`}>
+                  <IonLabel>
+                    <h3>{curso.titulo}</h3>
+                    <p>Carga Horária: {curso.cargaHoraria} horas</p>
+                  </IonLabel>
+                  <IonNote slot="end">R$ {curso.preco.toFixed(2)}</IonNote>
+                </IonItem>
+              ))}
+            </IonList>
+          )}
+        </div>  
         <ExploreContainer />
       </IonContent>
     </IonPage>
