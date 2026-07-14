@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "nome": "Notebook",
+    "quantidade": 5,
+    "valorUnitario": 3500
+  },
+  {
+    "id": 2,
+    "nome": "Mouse",
+    "quantidade": 12,
+    "valorUnitario": 89.9
+  },
+  {
+    "id": 3,
+    "nome": "Teclado",
+    "quantidade": 8,
+    "valorUnitario": 159.9
+  }
+]

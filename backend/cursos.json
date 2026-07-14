@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "titulo": "Matemática Básica",
+    "cargaHoraria": 40,
+    "preco": 200
+  },
+  {
+    "id": 2,
+    "titulo": "Programação em JavaScript",
+    "cargaHoraria": 60,
+    "preco": 300
+  },
+  {
+    "id": 3,
+    "titulo": "Banco de Dados",
+    "cargaHoraria": 50,
+    "preco": 250
+  }
+]
