@@ -14,6 +14,7 @@ import {
   IonNote,
 } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
+import GeoLocalizacao from '../components/GeoLocalizacao';
 import { useState } from 'react';
 
 const Home: React.FC = () => {
@@ -231,6 +232,11 @@ const handleCadastrarCurso = async (event: React.FormEvent) => {
             <p><strong>Estado:</strong> {estado}</p>
           </div>
         )}
+
+        <div style={{ padding: '16px' }}>
+          <h2>Geolocalização</h2>
+          <GeoLocalizacao />
+        </div>
 
         <div style={{ padding: '16px' }}>
           <h2>Produtos da API</h2>
